@@ -5,7 +5,7 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 import zone.moddev.mc.emcballpark.rule.Decision;
 
-/** The decisions from the most recent mapping pass. Written on the reload thread, read by commands. */
+/** The decisions from the most recent time ProjectE ran its mappers, for the commands. */
 public final class EstimateReport {
     private static volatile @Nullable Map<Item, Decision> decisions;
 

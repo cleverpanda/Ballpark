@@ -16,9 +16,9 @@ import net.minecraft.world.item.Item;
 /**
  * Which items a rule applies to. Every present condition must hold.
  *
- * @param items      item ids or a {@code #tag}
- * @param namespaces item id namespaces (mod ids)
- * @param tagPrefix  the item must have a tag starting with this, e.g. {@code c:ingots/}; the rest of the tag is the material
+ * @param items         item ids or a {@code #tag}
+ * @param namespaces    item id namespaces (mod ids)
+ * @param tagPrefix     the item must have a tag starting with this, e.g. {@code c:ingots/}; the rest of the tag is the material
  * @param components    data components the item must have by default, e.g. {@code minecraft:food}
  * @param withoutRecipe only items no recipe makes; keeps a rough estimate off crafted items, where it can come out
  *                      below the recipe and, with a recycling recipe, let players make EMC from nothing

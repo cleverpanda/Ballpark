@@ -6,6 +6,7 @@ import static zone.moddev.mc.emcballpark.EMCBallpark.MOD_ID;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import java.io.IOException;
@@ -60,15 +61,15 @@ public record RuleSet(List<Entry> rules, Map<String, Long> materials) {
         RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registries);
 
         List<Entry> rules = new ArrayList<>();
-        read(resources, RULES, ops, EstimateRule.CODEC, (id, rule) -> {
+        read(resources, RULES, "rule", ops, EstimateRule.CODEC, (id, rule) -> {
             if (rule.enabled()) rules.add(new Entry(id, rule));
         });
         rules.sort(Comparator.comparingInt((Entry e) -> -e.rule().priority()).thenComparing(Entry::id));
 
-        // The same material from several namespaces: anyone's beats the shipped default, otherwise first wins.
+        // A material defined outside our namespace replaces the shipped default; between two others, the first id wins.
         Map<String, Long> materials = new HashMap<>();
         Map<String, ResourceLocation> sources = new HashMap<>();
-        read(resources, MATERIALS, ops, MATERIAL, (id, emc) -> {
+        read(resources, MATERIALS, "material", ops, MATERIAL, (id, emc) -> {
             ResourceLocation previous = sources.get(id.getPath());
             if (previous == null || previous.getNamespace().equals(MOD_ID)) {
                 materials.put(id.getPath(), emc);
@@ -80,14 +81,14 @@ public record RuleSet(List<Entry> rules, Map<String, Long> materials) {
         return new RuleSet(List.copyOf(rules), Map.copyOf(materials));
     }
 
-    private static <T> void read(ResourceManager resources, FileToIdConverter files, DynamicOps<JsonElement> ops,
+    private static <T> void read(ResourceManager resources, FileToIdConverter files, String kind, DynamicOps<JsonElement> ops,
                                  Codec<T> codec, BiConsumer<ResourceLocation, T> sink) {
         for (Map.Entry<ResourceLocation, Resource> file : new TreeMap<>(files.listMatchingResources(resources)).entrySet()) {
             ResourceLocation id = files.fileToId(file.getKey());
             try (Reader reader = file.getValue().openAsReader()) {
-                codec.parse(ops, JsonParser.parseReader(reader))
-                        .resultOrPartial(error -> LOGGER.error("Skipping {} {}: {}", files == RULES ? "rule" : "material", id, error))
-                        .ifPresent(value -> sink.accept(id, value));
+                DataResult<T> result = codec.parse(ops, JsonParser.parseReader(reader));
+                result.error().ifPresent(error -> LOGGER.error("Skipping {} {}: {}", kind, id, error.message()));
+                result.result().ifPresent(value -> sink.accept(id, value));
             } catch (IOException | RuntimeException e) {
                 LOGGER.error("Couldn't read {}", file.getKey(), e);
             }

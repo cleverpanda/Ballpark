@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -86,7 +87,7 @@ public sealed interface Estimate {
                     .findFirst();
             if (each == null && base.isEmpty()) return Optional.empty();
 
-            // shortcut: units must be whole numbers or 1/n (nuggets, rods); 1.5 rounds to 2 for the tag conversion
+            // The tag conversion needs whole numbers, so units should be whole or 1/n (nuggets, rods); 1.5 becomes 2.
             int amount = units >= 1 ? (int) Math.round(units) : 1;
             int makes = units >= 1 ? 1 : (int) Math.round(1 / units);
             long emc = each == null ? 0 : Math.max(1, (long) Math.ceil(each * units));
@@ -128,7 +129,7 @@ public sealed interface Estimate {
             FoodProperties food = item.value().components().get(DataComponents.FOOD);
             if (food == null) return Optional.empty();
             long emc = Math.max(1, base + (long) Math.ceil(food.nutrition() * perNutrition + food.saturation() * perSaturation));
-            return Optional.of(Proposal.value(emc, String.format(java.util.Locale.ROOT, "food: nutrition %d, saturation %.1f", food.nutrition(), food.saturation())));
+            return Optional.of(Proposal.value(emc, String.format(Locale.ROOT, "food: nutrition %d, saturation %.1f", food.nutrition(), food.saturation())));
         }
     }
 }

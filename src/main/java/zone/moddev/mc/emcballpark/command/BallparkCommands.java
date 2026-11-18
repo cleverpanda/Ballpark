@@ -3,7 +3,6 @@ package zone.moddev.mc.emcballpark.command;
 import static zone.moddev.mc.emcballpark.EMCBallpark.MOD_ID;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +23,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jetbrains.annotations.Nullable;
 import zone.moddev.mc.emcballpark.mapping.EstimateReport;
 import zone.moddev.mc.emcballpark.rule.Decision;
+import zone.moddev.mc.emcballpark.rule.Proposal;
 
 /**
  * {@code /emcballpark explain [item]}: final EMC and which rule estimated it.
@@ -50,7 +50,7 @@ public final class BallparkCommands {
                 .then(Commands.literal("export").executes(c -> export(c.getSource()))));
     }
 
-    private static int explain(CommandSourceStack source, Item item) throws CommandSyntaxException {
+    private static int explain(CommandSourceStack source, Item item) {
         long emc = IEMCProxy.INSTANCE.getValue(item);
         Decision decision = EstimateReport.get(item);
         String line = BuiltInRegistries.ITEM.getKey(item) + ": " + (emc > 0 ? String.format("%,d EMC", emc) : "no EMC");
@@ -84,15 +84,22 @@ public final class BallparkCommands {
     }
 
     private static int export(CommandSourceStack source) {
+        if (!EstimateReport.ready()) {
+            source.sendFailure(Component.literal(NOT_READY));
+            return 0;
+        }
         Path file = source.getServer().getServerDirectory().resolve("logs").resolve(MOD_ID + "-report.csv");
         List<String> lines = new ArrayList<>(List.of("item,emc,rule,estimate,detail"));
         for (Holder.Reference<Item> item : BuiltInRegistries.ITEM.holders().toList()) {
+            String emc = Long.toString(IEMCProxy.INSTANCE.getValue(item));
             Decision decision = EstimateReport.get(item.value());
-            lines.add(String.join(",", item.key().location().toString(),
-                    Long.toString(IEMCProxy.INSTANCE.getValue(item)),
-                    decision == null ? "" : decision.rule().toString(),
-                    decision == null ? "" : decision.proposal().map(p -> p.isValue() ? Long.toString(p.emc()) : "conversion").orElse("skip"),
-                    csv(decision == null ? "" : decision.proposal().map(p -> p.detail()).orElse(""))));
+            if (decision == null) {
+                lines.add(String.join(",", item.key().location().toString(), emc, "", "", ""));
+                continue;
+            }
+            String estimate = decision.proposal().map(p -> p.isValue() ? Long.toString(p.emc()) : "conversion").orElse("skip");
+            String detail = decision.proposal().map(Proposal::detail).orElse("");
+            lines.add(String.join(",", item.key().location().toString(), emc, decision.rule().toString(), estimate, csv(detail)));
         }
         lines.subList(1, lines.size()).sort(null);
         try {
