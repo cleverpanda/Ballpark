@@ -1,0 +1,9 @@
+{
+  "priority": 900,
+  "match": {
+    "items": "#c:ores"
+  },
+  "estimate": {
+    "type": "skip"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "priority": 400,
+  "match": {
+    "tag_prefix": "c:storage_blocks/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 9
+  }
+}

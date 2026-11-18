@@ -1,0 +1,11 @@
+{
+  "priority": 300,
+  "match": {
+    "items": "#minecraft:chest_armor",
+    "without_recipe": true
+  },
+  "estimate": {
+    "type": "repair_material",
+    "units": 8
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "priority": 900,
+  "match": {
+    "items": "#c:raw_materials"
+  },
+  "estimate": {
+    "type": "skip"
+  }
+}

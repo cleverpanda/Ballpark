@@ -1,0 +1,118 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+def env = System.getenv()
+def tag = providers.environmentVariable('TAG')
+version = tag.orElse("${mod_version}-development").get()
+group = mod_group
+
+base {
+    archivesName = mod_archive_name
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
+    withJavadocJar()
+}
+
+neoForge {
+    version = neoforge_version
+
+    parchment {
+        minecraftVersion = parchment_minecraft_version
+        mappingsVersion = parchment_mappings_version
+    }
+
+    runs {
+        configureEach {
+            gameDirectory = file('run')
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ProjectE isn't on a maven we can reach; the jar lives in libs/
+    implementation files("libs/${projecte_jar}")
+}
+
+tasks.named('processResources', ProcessResources) {
+    def properties = [
+            minecraft_version_range: minecraft_version_range,
+            neoforge_version_range: neoforge_version_range,
+            loader_version_range: loader_version_range,
+            projecte_version_range: projecte_version_range,
+            mod_id: mod_id,
+            mod_name: mod_name,
+            mod_license: mod_license,
+            mod_version: project.version,
+            mod_authors: mod_authors,
+            mod_description: mod_description,
+            curseforge_url: "https://www.curseforge.com/minecraft/mc-mods/${mod_id}",
+            issue_url: issue_url,
+            update_url: update_url
+    ]
+    inputs.properties properties
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand properties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = mod_archive_name
+            from components.java
+        }
+    }
+    repositories {
+        if (env.MAVEN_UPLOAD_URL) {
+            maven {
+                url = uri(env.MAVEN_UPLOAD_URL)
+                credentials {
+                    username = env.MAVEN_UPLOAD_USERNAME
+                    password = env.MAVEN_UPLOAD_PASSWORD
+                }
+            }
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+    }
+}
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}

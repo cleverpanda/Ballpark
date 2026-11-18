@@ -1,0 +1,14 @@
+{
+  "priority": 100,
+  "match": {
+    "components": [
+      "minecraft:food"
+    ]
+  },
+  "estimate": {
+    "type": "food",
+    "base": 32,
+    "per_nutrition": 8,
+    "per_saturation": 4
+  }
+}

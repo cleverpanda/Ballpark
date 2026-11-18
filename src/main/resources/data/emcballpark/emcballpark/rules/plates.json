@@ -1,0 +1,10 @@
+{
+  "priority": 500,
+  "match": {
+    "tag_prefix": "c:plates/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 1
+  }
+}

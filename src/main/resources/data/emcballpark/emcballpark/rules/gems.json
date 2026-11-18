@@ -1,0 +1,10 @@
+{
+  "priority": 600,
+  "match": {
+    "tag_prefix": "c:gems/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 1
+  }
+}

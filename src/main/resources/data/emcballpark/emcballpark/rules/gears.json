@@ -1,0 +1,10 @@
+{
+  "priority": 400,
+  "match": {
+    "tag_prefix": "c:gears/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 4
+  }
+}

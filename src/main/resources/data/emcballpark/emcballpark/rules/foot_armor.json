@@ -1,0 +1,11 @@
+{
+  "priority": 300,
+  "match": {
+    "items": "#minecraft:foot_armor",
+    "without_recipe": true
+  },
+  "estimate": {
+    "type": "repair_material",
+    "units": 4
+  }
+}

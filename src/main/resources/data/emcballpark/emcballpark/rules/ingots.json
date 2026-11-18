@@ -1,0 +1,10 @@
+{
+  "priority": 600,
+  "match": {
+    "tag_prefix": "c:ingots/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 1
+  }
+}

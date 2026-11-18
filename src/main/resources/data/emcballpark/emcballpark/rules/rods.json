@@ -1,0 +1,10 @@
+{
+  "priority": 400,
+  "match": {
+    "tag_prefix": "c:rods/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 0.5
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "priority": 1000,
+  "match": {
+    "namespaces": [
+      "minecraft",
+      "projecte"
+    ]
+  },
+  "estimate": {
+    "type": "skip"
+  }
+}

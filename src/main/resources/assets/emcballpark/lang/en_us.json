@@ -1,0 +1,4 @@
+{
+  "mapper.emcballpark": "EMC Ballpark",
+  "mapper.emcballpark.tooltip": "Estimates EMC for modded items no recipe can reach, from the emcballpark datapack rules."
+}
