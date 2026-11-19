@@ -1,0 +1,11 @@
+{
+  "priority": 200,
+  "match": {
+    "items": "#c:stones",
+    "without_recipe": true
+  },
+  "estimate": {
+    "type": "fixed",
+    "emc": 1
+  }
+}

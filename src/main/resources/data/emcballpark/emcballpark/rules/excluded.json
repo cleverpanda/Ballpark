@@ -1,9 +1,0 @@
-{
-  "priority": 10000,
-  "match": {
-    "items": "#emcballpark:excluded"
-  },
-  "estimate": {
-    "type": "skip"
-  }
-}

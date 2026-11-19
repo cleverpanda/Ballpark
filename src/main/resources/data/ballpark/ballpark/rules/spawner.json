@@ -1,0 +1,10 @@
+{
+  "priority": 1100,
+  "match": {
+    "items": "minecraft:spawner"
+  },
+  "estimate": {
+    "type": "fixed",
+    "emc": 65536
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "priority": 200,
+  "match": {
+    "items": "create:limestone"
+  },
+  "estimate": {
+    "type": "fixed",
+    "emc": 1
+  }
+}

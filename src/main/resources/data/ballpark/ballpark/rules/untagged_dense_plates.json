@@ -1,0 +1,10 @@
+{
+  "priority": 400,
+  "match": {
+    "tag_prefix": "ballpark:dense_plates/"
+  },
+  "estimate": {
+    "type": "material",
+    "units": 9
+  }
+}

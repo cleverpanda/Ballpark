@@ -1,0 +1,6 @@
+{
+  "items": "minecraft:spawner",
+  "keep": [
+    "minecraft:block_entity_data"
+  ]
+}

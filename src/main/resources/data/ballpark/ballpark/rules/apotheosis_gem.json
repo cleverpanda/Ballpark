@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apotheosis"
+    }
+  ],
+  "priority": 1100,
+  "match": {
+    "items": "apotheosis:gem"
+  },
+  "estimate": {
+    "type": "fixed",
+    "emc": 512
+  }
+}

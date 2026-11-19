@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "apotheosis"
+    }
+  ],
+  "items": "apotheosis:gem",
+  "keep": [
+    "apotheosis:gem",
+    "apotheosis:purity"
+  ],
+  "scale": {
+    "component": "apotheosis:purity",
+    "values": {
+      "cracked": 1,
+      "chipped": 2,
+      "flawed": 4,
+      "normal": 8,
+      "flawless": 16,
+      "perfect": 32
+    }
+  }
+}

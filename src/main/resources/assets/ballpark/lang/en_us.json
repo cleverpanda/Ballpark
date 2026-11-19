@@ -1,0 +1,9 @@
+{
+  "mapper.ballpark": "Ballpark",
+  "mapper.ballpark.tooltip": "Estimates EMC for modded items no recipe can reach, from the ballpark datapack rules.",
+  "processor.ballpark.enchantments": "Ballpark Enchantments",
+  "processor.ballpark.enchantments.tooltip": "Adds EMC for enchantments on books and gear, and keeps them in transmutation knowledge.",
+  "processor.ballpark.enchantments.emc_per_level": "EMC per enchantment level",
+  "processor.ballpark.components": "Ballpark Components",
+  "processor.ballpark.components.tooltip": "Keeps and prices the data components named in the ballpark/components datapack files."
+}

@@ -1,0 +1,9 @@
+{
+  "priority": 10000,
+  "match": {
+    "items": "#ballpark:excluded"
+  },
+  "estimate": {
+    "type": "skip"
+  }
+}
