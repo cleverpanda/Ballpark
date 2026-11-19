@@ -10,15 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import moze_intel.projecte.api.ItemInfo;
 import moze_intel.projecte.api.proxy.IEMCProxy;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.jetbrains.annotations.Nullable;
 import zone.moddev.mc.emcballpark.mapping.EstimateReport;
@@ -40,9 +43,9 @@ public final class BallparkCommands {
         event.getDispatcher().register(Commands.literal(MOD_ID)
                 .requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("explain")
-                        .executes(c -> explain(c.getSource(), c.getSource().getPlayerOrException().getMainHandItem().getItem()))
+                        .executes(c -> explain(c.getSource(), c.getSource().getPlayerOrException().getMainHandItem()))
                         .then(Commands.argument("item", ItemArgument.item(event.getBuildContext()))
-                                .executes(c -> explain(c.getSource(), ItemArgument.getItem(c, "item").getItem()))))
+                                .executes(c -> explain(c.getSource(), ItemArgument.getItem(c, "item").createItemStack(1, false)))))
                 .then(Commands.literal("gaps")
                         .executes(c -> gaps(c.getSource(), null))
                         .then(Commands.argument("namespace", StringArgumentType.word())
@@ -50,14 +53,20 @@ public final class BallparkCommands {
                 .then(Commands.literal("export").executes(c -> export(c.getSource()))));
     }
 
-    private static int explain(CommandSourceStack source, Item item) {
-        long emc = IEMCProxy.INSTANCE.getValue(item);
-        Decision decision = EstimateReport.get(item);
-        String line = BuiltInRegistries.ITEM.getKey(item) + ": " + (emc > 0 ? String.format("%,d EMC", emc) : "no EMC");
+    /** Returns the EMC (capped at the int range), so {@code execute store result} can read it. */
+    private static int explain(CommandSourceStack source, ItemStack stack) {
+        long emc = IEMCProxy.INSTANCE.getValue(stack);
+        Decision decision = EstimateReport.get(stack.getItem());
+        String line = BuiltInRegistries.ITEM.getKey(stack.getItem()) + ": " + (emc > 0 ? String.format("%,d EMC", emc) : "no EMC");
         String why = !EstimateReport.ready() ? NOT_READY : decision == null ? "no rule matched" : decision.describe();
         source.sendSuccess(() -> Component.literal(line), false);
         source.sendSuccess(() -> Component.literal("  " + why), false);
-        return emc > 0 ? 1 : 0;
+        if (!stack.getComponentsPatch().isEmpty()) {
+            DataComponentPatch kept = IEMCProxy.INSTANCE.getPersistentInfo(ItemInfo.fromStack(stack)).getComponentsPatch();
+            String keys = kept.entrySet().stream().map(e -> BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(e.getKey()).toString()).sorted().toList().toString();
+            source.sendSuccess(() -> Component.literal("  kept when learned: " + (kept.isEmpty() ? "nothing" : keys)), false);
+        }
+        return (int) Math.min(emc, Integer.MAX_VALUE);
     }
 
     private static int gaps(CommandSourceStack source, @Nullable String namespace) {

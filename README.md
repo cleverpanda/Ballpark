@@ -129,6 +129,31 @@ Or keep the rule but only for foods nothing crafts:
 }
 ```
 
+### Enchanted books and gear
+
+Ballpark adds a ProjectE data component processor, "EMC Ballpark Enchantments", that does two things for anything
+carrying enchantments (enchanted books, and enchanted tools, weapons and armor):
+
+- Each enchantment adds `emc_per_level ÷ weight × level` on top of the item's own value. Rarer enchantments have a
+  lower weight, so they're worth more. With the default 5,000, a Mending book is a plain book plus 2,500, and a
+  Sharpness V diamond sword is the sword plus 2,500.
+- The enchantments are kept when the item is learned in a Transmutation Table or copied by an Energy Condenser, so a
+  learned Mending book comes back out as a Mending book.
+
+ProjectE has a processor like this too, but it's switched off in its code. Ours is set in
+`config/ProjectE/mapping.toml` under `[processors.EMC-Ballpark-Enchantments]`:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `enabled` | `true` | Add EMC for enchantments. |
+| `persistent` | `true` | Keep enchantments when learned or copied. Off: learned items come back plain. |
+| `emc_per_level` | `5000` | Value per level, before dividing by the enchantment's weight. |
+
+The plain enchanted book needs a value of its own first, so the shipped `enchanted_book` rule makes it worth one book.
+
+This is a balance call. Once enchantments are worth EMC, an XP farm and an enchanting table become a source of EMC.
+A lower `emc_per_level` shrinks that, but makes learned books cheaper to copy.
+
 ## Commands
 
 All need permission level 2 (operators).
@@ -136,7 +161,7 @@ All need permission level 2 (operators).
 | Command | Does |
 |---|---|
 | `/emcballpark explain` | Final EMC of the item in your main hand, and the rule that estimated or skipped it. |
-| `/emcballpark explain <item>` | The same for any item, e.g. `/emcballpark explain basemetals:zinc_ingot`. |
+| `/emcballpark explain <item>` | The same for any item, e.g. `/emcballpark explain basemetals:zinc_ingot`. Components work too: `/emcballpark explain minecraft:enchanted_book[stored_enchantments={levels:{"minecraft:mending":1}}]` also lists what's kept when it's learned. The command's result is the EMC, for `execute store`. |
 | `/emcballpark gaps` | Count of items with no EMC per mod, and the first 10 of them. Items a rule skips aren't counted. |
 | `/emcballpark gaps <modid>` | The same, for one mod. |
 | `/emcballpark export` | Writes every item's EMC, rule and estimate to `logs/emcballpark-report.csv`. |
@@ -173,6 +198,7 @@ Every condition you give must hold.
 | `fixed` | `emc` | That many EMC. |
 | `material` | `units` | `units` of the matched material: converted from its `c:ingots/` or `c:gems/` tag, plus the materials table value if there is one. Use whole numbers or 1/n (`0.5`, `0.111111`). |
 | `repair_material` | `units` | `units` of the item's own repair item (tool tier or armor material). |
+| `from_item` | `item`, `count` (1) | Worth `count` of another item, at whatever ProjectE values it. |
 | `food` | `base` (32), `per_nutrition` (8), `per_saturation` (4) | `base + nutrition × per_nutrition + saturation × per_saturation`. |
 
 ### Shipped rules
@@ -180,6 +206,7 @@ Every condition you give must hold.
 | Rule | Priority | Does |
 |---|---|---|
 | `excluded` | 10000 | Skips `#emcballpark:excluded`. |
+| `enchanted_book` | 1100 | Makes `minecraft:enchanted_book` worth one book, so the enchantment processor has a base to add to. |
 | `vanilla_and_projecte` | 1000 | Skips `minecraft` and `projecte` items; ProjectE already values them. |
 | `ores`, `raw_materials` | 900 | Skips `#c:ores` and `#c:raw_materials`; ProjectE keeps these at 0. |
 | `ingots`, `gems` | 600 | 1 unit of material. |

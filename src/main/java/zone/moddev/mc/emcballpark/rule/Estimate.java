@@ -36,6 +36,7 @@ public sealed interface Estimate {
             "fixed", Fixed.CODEC,
             "material", Material.CODEC,
             "repair_material", RepairMaterial.CODEC,
+            "from_item", FromItem.CODEC,
             "food", Food.CODEC);
 
     Codec<Estimate> CODEC = Codec.STRING.partialDispatch("type",
@@ -94,6 +95,20 @@ public sealed interface Estimate {
             String detail = material + " x " + units + base.map(tag -> ", from #" + tag.location()).orElse("")
                     + (each == null ? "" : ", " + each + " EMC per unit");
             return Optional.of(new Proposal(emc, Set.of(), base, amount, makes, detail));
+        }
+    }
+
+    /** Worth {@code count} of another item, whatever ProjectE values that at. */
+    record FromItem(Item item, int count) implements Estimate {
+        static final MapCodec<FromItem> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(FromItem::item),
+                ExtraCodecs.POSITIVE_INT.optionalFieldOf("count", 1).forGetter(FromItem::count)
+        ).apply(i, FromItem::new));
+
+        public String type() { return "from_item"; }
+
+        public Optional<Proposal> propose(Holder.Reference<Item> item, String material, Map<String, Long> materials) {
+            return Optional.of(Proposal.from(Set.of(this.item), count, count + " x " + BuiltInRegistries.ITEM.getKey(this.item)));
         }
     }
 

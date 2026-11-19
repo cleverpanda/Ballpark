@@ -1,0 +1,12 @@
+{
+  "priority": 1100,
+  "match": {
+    "items": [
+      "minecraft:enchanted_book"
+    ]
+  },
+  "estimate": {
+    "type": "from_item",
+    "item": "minecraft:book"
+  }
+}
