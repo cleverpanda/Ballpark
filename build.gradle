@@ -116,3 +116,9 @@ eclipse {
         downloadSources = true
     }
 }
+
+// Only README and LICENSE ship in the jar; plans and notes stay in the repo.
+tasks.named('jar', Jar) {
+    from('README.md', 'LICENSE.md')
+    exclude { it.name.endsWith('.md') && !(it.name in ['README.md', 'LICENSE.md']) }
+}

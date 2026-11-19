@@ -44,15 +44,6 @@ classes
 /hs_err_pid*.log
 /replay_pid*.log
 
-# local regression, benchmark, and profiling evidence
-/benchmark-*/
-/preferred-seed-*/
-/validation/
-/regression-*/
-/evidence/
-/evidence-*/
-/*-evidence/
-
 /README.txt
 /forge-*-changelog.txt
 
@@ -70,24 +61,21 @@ __pycache__/
 
 /bugreport.md
 
-# machine-specific agent context (public project notes belong under /docs)
-AGENT.md
-AGENTS.md
-agent-notes/
-.agent/
-.agents/
-.codex/
-CLAUDE.md
-.claude/
-GEMINI.md
-.gemini/
-agent-*.md
-codex-*.md
-
-# local validation/audit reports
-**/VALIDATION.md
-**/validation.md
-**/DEVELOPMENT.md
-**/development.md
-**/REGISTRY_AUDIT.md
-**/registry_audit.md
+# planning docs, reference sources and images we make: kept local
+art/
+/tools/
+/unused_assets/
+/reference/
+PLAN.md
+PLANNING.md
+DESIGN.md
+TODO.md
+IDEAS.md
+REVIEW.md
+PORT-NOTES.md
+MARKET-RESEARCH*.md
+TEST-CASES.csv
+*-COMPARISON.csv
+ECOSYSTEM-*.md
+CROSS-MOD-NOTES.md
+ecosystem-board.mmd
